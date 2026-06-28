@@ -47,7 +47,7 @@ export default function Request() {
 
   if (submitted) {
     return (
-      <section className="page-hero section">
+      <div className="page-transition"><section className="page-hero section">
         <div className="container request-success">
           <div className="success-icon">✓</div>
           <h1 className="section-title">Request received.</h1>
@@ -59,12 +59,12 @@ export default function Request() {
             Submit another
           </button>
         </div>
-      </section>
+      </section></div>
     )
   }
 
   return (
-    <>
+    <div className="page-transition">
       <section className="page-hero section">
         <div className="container">
           <p className="section-label">Have Your Say</p>
@@ -167,6 +167,6 @@ export default function Request() {
           </aside>
         </div>
       </section>
-    </>
+    </div>
   )
 }

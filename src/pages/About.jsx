@@ -1,10 +1,34 @@
+import { useFadeIn, useFadeInChildren } from '../hooks/useFadeIn'
+import { useCountUp } from '../hooks/useCountUp'
 import './About.css'
 
-export default function About() {
+const stats = [
+  { num: 20, suffix: '+', label: 'Locations across Sydney' },
+  { num: 150, suffix: '+', label: 'Products curated' },
+  { num: 24, suffix: '/7', label: 'Always available' },
+  { num: 100, suffix: '%', label: 'Community driven' },
+]
+
+function StatCard({ num, suffix, label }) {
+  const { value, ref } = useCountUp(num)
   return (
-    <>
+    <div ref={ref} className="stat-card card fade-up" data-animate>
+      <span className="stat-card__value neon-gradient">{value}{suffix}</span>
+      <span className="stat-card__label">{label}</span>
+    </div>
+  )
+}
+
+export default function About() {
+  const heroRef = useFadeIn()
+  const missionRef = useFadeIn()
+  const statsRef = useFadeInChildren('[data-animate]', 100)
+  const valuesRef = useFadeInChildren('[data-animate]', 100)
+
+  return (
+    <div className="page-transition">
       <section className="page-hero section">
-        <div className="container">
+        <div className="container fade-up" ref={heroRef}>
           <p className="section-label">Our Story</p>
           <h1 className="section-title">
             We saw the gap.<br />
@@ -22,7 +46,7 @@ export default function About() {
 
       <section className="section">
         <div className="container about-grid">
-          <div className="about-grid__text">
+          <div className="about-grid__text fade-up" ref={missionRef}>
             <p className="section-label">Mission</p>
             <h2 className="section-title">Premium products.<br />Accessible everywhere.</h2>
             <p className="about-text">
@@ -36,17 +60,9 @@ export default function About() {
               the vending experience into the 21st century.
             </p>
           </div>
-          <div className="about-grid__stats">
-            {[
-              { value: '20+', label: 'Locations across Sydney' },
-              { value: '150+', label: 'Products curated' },
-              { value: '24/7', label: 'Always available' },
-              { value: '100%', label: 'Community driven' },
-            ].map(s => (
-              <div key={s.label} className="stat-card card">
-                <span className="stat-card__value neon-gradient">{s.value}</span>
-                <span className="stat-card__label">{s.label}</span>
-              </div>
+          <div className="about-grid__stats" ref={statsRef}>
+            {stats.map(s => (
+              <StatCard key={s.label} {...s} />
             ))}
           </div>
         </div>
@@ -58,14 +74,14 @@ export default function About() {
         <div className="container">
           <p className="section-label">Values</p>
           <h2 className="section-title">What drives us.</h2>
-          <div className="values__grid">
+          <div className="values__grid" ref={valuesRef}>
             {[
               { title: 'Quality First', desc: 'We\'d rather carry 50 great products than 200 average ones. Every item in our machines earns its spot.' },
               { title: 'Community Led', desc: 'Our Request an Item feature isn\'t a gimmick — product requests directly shape our restocking decisions.' },
               { title: 'Transparency', desc: 'Fair pricing, no hidden markups. You know what you\'re paying and why.' },
               { title: 'Consistency', desc: 'A machine that\'s always empty isn\'t a vending machine — it\'s a disappointment. We don\'t do empty.' },
             ].map(v => (
-              <div key={v.title} className="card value-card">
+              <div key={v.title} className="card value-card fade-up" data-animate>
                 <h3 className="value-card__title">{v.title}</h3>
                 <p className="value-card__desc">{v.desc}</p>
               </div>
@@ -73,6 +89,6 @@ export default function About() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   )
 }

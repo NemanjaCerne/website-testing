@@ -63,6 +63,51 @@
   padding-bottom: 4rem;
 }
 
+/* Animated logo ring */
+.hero__logo-ring {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+}
+
+.hero__ring--outer {
+  border-color: var(--color-neon-blue);
+  box-shadow: 0 0 16px var(--color-neon-blue), 0 0 40px rgba(0,212,255,0.2);
+  animation: ring-rotate 8s linear infinite;
+}
+
+.hero__ring--inner {
+  inset: 10px;
+  border-color: var(--color-neon-pink);
+  box-shadow: 0 0 12px var(--color-neon-pink), 0 0 30px rgba(255,45,120,0.2);
+  animation: ring-rotate 6s linear infinite reverse;
+}
+
+.hero__ring-logo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes ring-rotate {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .hero__heading {
   font-size: clamp(3.5rem, 9vw, 7rem);
   line-height: 1.05;

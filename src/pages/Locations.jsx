@@ -21,7 +21,7 @@ export default function Locations() {
   }
 
   return (
-    <>
+    <div className="page-transition">
       <section className="page-hero section">
         <div className="container">
           <p className="section-label">Find Us</p>
@@ -82,6 +82,6 @@ export default function Locations() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   )
 }

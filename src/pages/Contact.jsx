@@ -16,7 +16,7 @@ export default function Contact() {
   }
 
   return (
-    <>
+    <div className="page-transition">
       <section className="page-hero section">
         <div className="container">
           <p className="section-label">Get in Touch</p>
@@ -83,6 +83,6 @@ export default function Contact() {
           )}
         </div>
       </section>
-    </>
+    </div>
   )
 }
