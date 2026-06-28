@@ -16,7 +16,7 @@ export default function Navbar() {
     <header className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
       <div className="navbar__inner">
         <Link to="/" className="navbar__logo">
-          HUSTLE <span className="neon-gradient">VENDING</span>
+          <img src="/hustle_logo.jpg" alt="Hustle Vending" className="navbar__logo-img" />
         </Link>
 
         <button

@@ -6,7 +6,7 @@ export default function Footer() {
     <footer className="footer">
       <div className="container footer__inner">
         <div className="footer__brand">
-          <p className="footer__logo">HUSTLE <span className="neon-gradient">VENDING</span></p>
+          <img src="/hustle_logo.jpg" alt="Hustle Vending" className="footer__logo-img" />
           <p className="footer__tagline">Premium vending. Sydney.</p>
         </div>
 
