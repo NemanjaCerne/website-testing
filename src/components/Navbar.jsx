@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NavLink, Link } from 'react-router-dom'
+import logo from '/hustle_logo.jpg'
 import './Navbar.css'
 
 export default function Navbar() {
@@ -16,7 +17,7 @@ export default function Navbar() {
     <header className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
       <div className="navbar__inner">
         <Link to="/" className="navbar__logo">
-          <img src="/hustle_logo.jpg" alt="Hustle Vending" className="navbar__logo-img" />
+          <img src={logo} alt="Hustle Vending" className="navbar__logo-img" />
         </Link>
 
         <button

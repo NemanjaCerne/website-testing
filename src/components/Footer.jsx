@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import logo from '/hustle_logo.jpg'
 import './Footer.css'
 
 export default function Footer() {
@@ -6,7 +7,7 @@ export default function Footer() {
     <footer className="footer">
       <div className="container footer__inner">
         <div className="footer__brand">
-          <img src="/hustle_logo.jpg" alt="Hustle Vending" className="footer__logo-img" />
+          <img src={logo} alt="Hustle Vending" className="footer__logo-img" />
           <p className="footer__tagline">Premium vending. Sydney.</p>
         </div>
 

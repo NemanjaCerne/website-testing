@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom'
+import banner from '/banner.jpg'
 import './Home.css'
 
 export default function Home() {
   return (
     <>
       {/* Hero */}
-      <section className="hero">
+      <section className="hero" style={{ backgroundImage: `url(${banner})` }}>
         <div className="hero__orb hero__orb--blue" />
         <div className="hero__orb hero__orb--pink" />
         <div className="container hero__content">
