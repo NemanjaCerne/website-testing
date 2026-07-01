@@ -305,7 +305,13 @@
 
 @media (max-width: 600px) {
   .scroll-scene__machine {
-    display: none; /* hide machine on small phones, links exist in navbar */
+    width: 200px;
+  }
+}
+
+@media (max-width: 360px) {
+  .scroll-scene__machine {
+    display: none;
   }
 }
 

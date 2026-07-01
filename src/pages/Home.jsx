@@ -28,18 +28,22 @@ export default function Home() {
   useEffect(() => {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (prefersReduced) {
-      gsap.set([machineRef.current, ...slotsRef.current, ctaTextRef.current], { opacity: 1, x: 0, scale: 1 })
+      gsap.set([machineRef.current, ...slotsRef.current, ctaTextRef.current], { opacity: 1, x: 0, y: 0, yPercent: 0, scale: 1 })
       gsap.set(['#vm-glass-glow', '#vm-glass-glow2'], { opacity: 1 })
       return
     }
 
+    const isMobile = window.innerWidth < 900
+
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ delay: 0.3 })
 
-      // Machine slides in from right on load
+      // Entrance: rise up from below on mobile, slide in from right on desktop
       tl.fromTo(machineRef.current,
-        { x: '55vw', opacity: 0 },
-        { x: 0, opacity: 1, duration: 1.2, ease: 'power3.out' }
+        isMobile ? { y: 70, opacity: 0 } : { x: '55vw', opacity: 0 },
+        isMobile
+          ? { y: 0, opacity: 1, duration: 1.0, ease: 'power3.out' }
+          : { x: 0, opacity: 1, duration: 1.2, ease: 'power3.out' }
       )
 
       // Glass lights up
@@ -65,7 +69,7 @@ export default function Home() {
         '-=0.1'
       )
 
-      // Scroll-linked exit: parallax first, then machine slides back out to the right
+      // Scroll-linked exit: parallax then slide out — direction depends on layout
       const exitTl = gsap.timeline({
         scrollTrigger: {
           trigger: sceneRef.current,
@@ -74,9 +78,17 @@ export default function Home() {
           scrub: 1,
         },
       })
-      exitTl
-        .to(machineRef.current, { yPercent: -8, ease: 'none', duration: 0.55 })
-        .to(machineRef.current, { x: '60vw', opacity: 0, ease: 'power2.in', duration: 0.45 })
+      if (isMobile) {
+        // Column layout — machine is below text, sink it back down as hero exits
+        exitTl
+          .to(machineRef.current, { y: -15, ease: 'none', duration: 0.55 })
+          .to(machineRef.current, { y: 90, opacity: 0, ease: 'power2.in', duration: 0.45 })
+      } else {
+        // Side-by-side layout — machine slides back off to the right
+        exitTl
+          .to(machineRef.current, { yPercent: -8, ease: 'none', duration: 0.55 })
+          .to(machineRef.current, { x: '60vw', opacity: 0, ease: 'power2.in', duration: 0.45 })
+      }
     }, sceneRef)
 
     return () => ctx.revert()
