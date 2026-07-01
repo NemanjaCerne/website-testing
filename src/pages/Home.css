@@ -1,69 +1,41 @@
-/* Hero */
-.hero {
+/* ── Scroll scene (pinned hero) ── */
+.scroll-scene {
   position: relative;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   overflow: hidden;
-  padding-top: 6rem;
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
+  /* No GSAP pin — machine animates in on load, parallax on scroll */
 }
 
-.hero::before {
+.scroll-scene::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(10,10,10,0.72) 0%, rgba(10,10,10,0.85) 60%, #0a0a0a 100%);
+  background: linear-gradient(to bottom, rgba(10,10,10,0.72) 0%, rgba(10,10,10,0.88) 60%, #0a0a0a 100%);
   z-index: 0;
 }
 
-.hero__orb {
-  display: none;
-}
-
-.hero__orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.18;
-  pointer-events: none;
-  animation: orb-drift 10s ease-in-out infinite alternate;
-}
-
-.hero__orb--blue {
-  width: 600px;
-  height: 600px;
-  background: var(--color-neon-blue);
-  top: -100px;
-  right: -100px;
-  animation-delay: 0s;
-}
-
-.hero__orb--pink {
-  width: 500px;
-  height: 500px;
-  background: var(--color-neon-pink);
-  bottom: -80px;
-  left: -80px;
-  animation-delay: -5s;
-}
-
-@keyframes orb-drift {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(30px, 20px) scale(1.05); }
-}
-
-.hero__content {
+.scroll-scene__inner {
   position: relative;
   z-index: 1;
-  padding-top: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4rem;
+  min-height: 100vh;
+  padding-top: 7rem;
   padding-bottom: 4rem;
 }
 
-/* Animated logo ring */
+/* ── Left text ── */
+.scroll-scene__text {
+  flex: 1;
+  max-width: 540px;
+}
+
+/* ── Animated logo ring (reused from old hero) ── */
 .hero__logo-ring {
   position: relative;
   width: 160px;
@@ -129,27 +101,122 @@
   flex-wrap: wrap;
 }
 
-.hero__scroll-hint {
+/* ── Orbs ── */
+.hero__orb {
   position: absolute;
-  bottom: 2.5rem;
-  left: 50%;
-  transform: translateX(-50%);
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.18;
+  pointer-events: none;
+  animation: orb-drift 10s ease-in-out infinite alternate;
 }
 
-.hero__scroll-hint span {
+.hero__orb--blue {
+  width: 600px;
+  height: 600px;
+  background: var(--color-neon-blue);
+  top: -100px;
+  right: -100px;
+  animation-delay: 0s;
+}
+
+.hero__orb--pink {
+  width: 500px;
+  height: 500px;
+  background: var(--color-neon-pink);
+  bottom: -80px;
+  left: -80px;
+  animation-delay: -5s;
+}
+
+@keyframes orb-drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(30px, 20px) scale(1.05); }
+}
+
+/* ── Vending machine ── */
+.scroll-scene__machine {
+  flex: 0 0 auto;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.vm-wrapper {
+  position: relative;
+  width: 100%;
+  filter: drop-shadow(0 0 40px rgba(0, 212, 255, 0.12));
+}
+
+.vm-wrapper svg {
+  width: 100%;
+  height: auto;
   display: block;
-  width: 1.5px;
-  height: 60px;
-  background: linear-gradient(to bottom, var(--color-neon-blue), transparent);
-  animation: scroll-pulse 2s ease-in-out infinite;
 }
 
-@keyframes scroll-pulse {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
+/* Slot overlay container — sits on top of SVG, same dimensions */
+.vm-slots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none; /* slots themselves re-enable */
 }
 
-/* Features */
+/* Each nav slot */
+.vm-slot {
+  position: absolute;
+  pointer-events: all;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 5px;
+  background: rgba(0, 212, 255, 0.03);
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+  opacity: 0; /* GSAP animates this to 1 */
+}
+
+.vm-slot:hover {
+  border-color: var(--color-neon-blue);
+  background: rgba(0, 212, 255, 0.08);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.2), inset 0 0 12px rgba(0, 212, 255, 0.05);
+  transform: scale(1.04);
+}
+
+.vm-slot__icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 6px rgba(0, 212, 255, 0.5));
+}
+
+.vm-slot__label {
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-white);
+  text-align: center;
+  opacity: 0.85;
+}
+
+/* CTA text below machine */
+.vm-cta-text {
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--color-muted);
+  text-align: center;
+  opacity: 0; /* GSAP animates this */
+}
+
+/* ── Features ── */
 .features__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -174,7 +241,7 @@
   line-height: 1.7;
 }
 
-/* CTA Banner */
+/* ── CTA Banner ── */
 .cta-banner {
   background: var(--color-surface);
   border-top: 1px solid var(--color-border);
@@ -198,4 +265,61 @@
 .cta-banner__sub {
   color: var(--color-muted);
   font-size: 0.95rem;
+}
+
+/* ── Mobile ── */
+@media (max-width: 900px) {
+  .scroll-scene__inner {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    padding-top: 8rem;
+    gap: 3rem;
+  }
+
+  .scroll-scene__text {
+    max-width: 100%;
+  }
+
+  .hero__logo-ring {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero__actions {
+    justify-content: center;
+  }
+
+  .scroll-scene__machine {
+    width: 240px;
+  }
+
+  .vm-slot__icon {
+    font-size: 1.2rem;
+  }
+
+  .vm-slot__label {
+    font-size: 0.55rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .scroll-scene__machine {
+    display: none; /* hide machine on small phones, links exist in navbar */
+  }
+}
+
+/* ── Reduced motion fallback ── */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-scene__machine {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .vm-slot {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .vm-cta-text {
+    opacity: 1 !important;
+  }
 }

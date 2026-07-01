@@ -1,43 +1,155 @@
+import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import banner from '/banner.jpg'
 import logo from '/hustle_logo.jpg'
+import VendingMachine from '../components/VendingMachine'
 import { useFadeIn, useFadeInChildren } from '../hooks/useFadeIn'
 import './Home.css'
 
+gsap.registerPlugin(ScrollTrigger)
+
+const NAV_SLOTS = [
+  { to: '/locations', icon: '📍', label: 'Locations' },
+  { to: '/request',   icon: '🛒', label: 'Request an Item' },
+  { to: '/about',     icon: 'ℹ️',  label: 'About' },
+  { to: '/contact',   icon: '✉️',  label: 'Contact' },
+]
+
 export default function Home() {
-  const heroRef = useFadeIn()
+  const sceneRef    = useRef(null)
+  const machineRef  = useRef(null)
+  const slotsRef    = useRef([])
+  const ctaTextRef  = useRef(null)
   const featuresRef = useFadeInChildren('[data-animate]', 100)
-  const ctaRef = useFadeIn()
+  const ctaBannerRef = useFadeIn()
+
+  useEffect(() => {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReduced) {
+      gsap.set([machineRef.current, ...slotsRef.current, ctaTextRef.current], { opacity: 1, x: 0, scale: 1 })
+      gsap.set(['#vm-glass-glow', '#vm-glass-glow2'], { opacity: 1 })
+      return
+    }
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ delay: 0.3 })
+
+      // Machine slides in from right on load
+      tl.fromTo(machineRef.current,
+        { x: '55vw', opacity: 0 },
+        { x: 0, opacity: 1, duration: 1.2, ease: 'power3.out' }
+      )
+
+      // Glass lights up
+      tl.to(['#vm-glass-glow', '#vm-glass-glow2'],
+        { opacity: 1, duration: 0.5 },
+        '-=0.2'
+      )
+      tl.to('#vm-glass',
+        { attr: { stroke: '#00d4ff' }, duration: 0.4 },
+        '<'
+      )
+
+      // Product slots stagger in
+      tl.fromTo(slotsRef.current,
+        { opacity: 0, scale: 0.75, y: 8 },
+        { opacity: 1, scale: 1, y: 0, stagger: 0.15, duration: 0.4, ease: 'back.out(1.4)' }
+      )
+
+      // CTA text
+      tl.fromTo(ctaTextRef.current,
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.35 },
+        '-=0.1'
+      )
+
+      // Subtle parallax as user scrolls past the hero
+      gsap.to(machineRef.current, {
+        yPercent: -12,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: sceneRef.current,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+        },
+      })
+    }, sceneRef)
+
+    return () => ctx.revert()
+  }, [])
 
   return (
     <div className="page-transition">
-      {/* Hero */}
-      <section className="hero" style={{ backgroundImage: `url(${banner})` }}>
+      {/* ── Scroll scene (pinned hero) ── */}
+      <section
+        className="scroll-scene"
+        ref={sceneRef}
+        style={{ backgroundImage: `url(${banner})` }}
+      >
         <div className="hero__orb hero__orb--blue" />
         <div className="hero__orb hero__orb--pink" />
-        <div className="container hero__content fade-up is-visible" ref={heroRef}>
-          <div className="hero__logo-ring">
-            <div className="hero__ring hero__ring--outer" />
-            <div className="hero__ring hero__ring--inner" />
-            <img src={logo} alt="Hustle Vending" className="hero__ring-logo" />
+
+        <div className="scroll-scene__inner container">
+          {/* Left: text */}
+          <div className="scroll-scene__text">
+            <div className="hero__logo-ring">
+              <div className="hero__ring hero__ring--outer" />
+              <div className="hero__ring hero__ring--inner" />
+              <img src={logo} alt="Hustle Vending" className="hero__ring-logo" />
+            </div>
+            <p className="section-label">Sydney's Premium Vending</p>
+            <h1 className="hero__heading">
+              Vending,<br />
+              <span className="neon-gradient">Elevated.</span>
+            </h1>
+            <p className="hero__sub">
+              Hustle Vending brings premium, curated vending machines to the best spots
+              across Sydney — stocked with what you actually want.
+            </p>
+            <div className="hero__actions">
+              <Link to="/request" className="btn-primary">Request an Item</Link>
+              <Link to="/locations" className="btn-outline">Find a Machine</Link>
+            </div>
           </div>
-          <p className="section-label">Sydney's Premium Vending</p>
-          <h1 className="hero__heading">
-            Vending,<br />
-            <span className="neon-gradient">Elevated.</span>
-          </h1>
-          <p className="hero__sub">
-            Hustle Vending brings premium, curated vending machines to the best spots
-            across Sydney — stocked with what you actually want.
-          </p>
-          <div className="hero__actions">
-            <Link to="/request" className="btn-primary">Request an Item</Link>
-            <Link to="/locations" className="btn-outline">Find a Machine</Link>
+
+          {/* Right: vending machine */}
+          <div className="scroll-scene__machine" ref={machineRef}>
+            <div className="vm-wrapper">
+              <VendingMachine />
+
+              {/* Nav links overlaid on glass slots */}
+              <div className="vm-slots">
+                {NAV_SLOTS.map((slot, i) => (
+                  <Link
+                    key={slot.to}
+                    to={slot.to}
+                    className="vm-slot"
+                    ref={el => slotsRef.current[i] = el}
+                    style={{
+                      left:   i % 2 === 0 ? '9.3%'  : '52.7%',
+                      top:    i < 2       ? '17.7%' : '46.5%',
+                      width:  '38%',
+                      height: '25%',
+                    }}
+                  >
+                    <span className="vm-slot__icon">{slot.icon}</span>
+                    <span className="vm-slot__label">{slot.label}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <p className="vm-cta-text" ref={ctaTextRef}>
+              Pick something. We've stocked it for you.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Features */}
+      {/* ── Features ── */}
       <section className="section features">
         <div className="container">
           <p className="section-label">Why Hustle</p>
@@ -59,9 +171,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Banner */}
+      {/* ── CTA Banner ── */}
       <section className="cta-banner">
-        <div className="container cta-banner__inner fade-up" ref={ctaRef}>
+        <div className="container cta-banner__inner fade-up" ref={ctaBannerRef}>
           <div>
             <h2 className="cta-banner__heading">Want something stocked near you?</h2>
             <p className="cta-banner__sub">Tell us what you want and where — we listen.</p>
