@@ -1,26 +1,22 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
 import './Request.css'
 
-const LOCATIONS = [
-  'Sydney CBD — 1 Martin Place',
-  'Bondi Beach — Campbell Parade',
-  'USYD Campus — Eastern Ave, Camperdown',
-  'Surry Hills — 80 Campbell St',
-  'Chatswood Chase — 345 Victoria Ave',
-  'Pyrmont Bay — Pirrama Rd',
-  'Other / Not listed',
-]
-
 export default function Request() {
-  const [form, setForm] = useState({
-    location: '',
-    item: '',
-    reason: '',
-    name: '',
-    email: '',
-  })
+  const [locations, setLocations] = useState([])
+  const [form, setForm] = useState({ location: '', item: '', reason: '', name: '', email: '' })
   const [submitted, setSubmitted] = useState(false)
   const [errors, setErrors] = useState({})
+  const [submitting, setSubmitting] = useState(false)
+
+  useEffect(() => {
+    supabase
+      .from('locations')
+      .select('name, address')
+      .eq('active', true)
+      .order('created_at', { ascending: true })
+      .then(({ data }) => setLocations(data ?? []))
+  }, [])
 
   const validate = () => {
     const e = {}
@@ -35,14 +31,20 @@ export default function Request() {
     setErrors(er => ({ ...er, [name]: undefined }))
   }
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault()
     const errs = validate()
-    if (Object.keys(errs).length) {
-      setErrors(errs)
-      return
-    }
-    setSubmitted(true)
+    if (Object.keys(errs).length) { setErrors(errs); return }
+    setSubmitting(true)
+    const { error } = await supabase.from('requests').insert([{
+      location: form.location,
+      item: form.item.trim(),
+      reason: form.reason.trim() || null,
+      name: form.name.trim() || null,
+      email: form.email.trim() || null,
+    }])
+    setSubmitting(false)
+    if (!error) setSubmitted(true)
   }
 
   if (submitted) {
@@ -94,7 +96,12 @@ export default function Request() {
                 className={errors.location ? 'error' : ''}
               >
                 <option value="">Select a location…</option>
-                {LOCATIONS.map(l => <option key={l} value={l}>{l}</option>)}
+                {locations.map(l => (
+                  <option key={l.name} value={`${l.name} — ${l.address}`}>
+                    {l.name} — {l.address}
+                  </option>
+                ))}
+                <option value="Other / Not listed">Other / Not listed</option>
               </select>
               {errors.location && <span className="form-error">{errors.location}</span>}
             </div>
@@ -150,8 +157,8 @@ export default function Request() {
               </div>
             </div>
 
-            <button type="submit" className="btn-primary request-submit">
-              Submit Request
+            <button type="submit" className="btn-primary request-submit" disabled={submitting}>
+              {submitting ? 'Submitting…' : 'Submit Request'}
             </button>
           </form>
 

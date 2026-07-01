@@ -1,19 +1,23 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import MapView from '../components/MapView'
+import { supabase } from '../lib/supabase'
 import './Locations.css'
 
-const locations = [
-  { name: 'Sydney CBD', address: '1 Martin Place, Sydney NSW 2000', type: 'Office Tower', hours: '24/7', products: 'Snacks, drinks, coffee', coords: [-33.8688, 151.2093] },
-  { name: 'Bondi Beach', address: 'Campbell Parade, Bondi Beach NSW 2026', type: 'Lifestyle Hub', hours: '6am – 10pm', products: 'Health snacks, hydration, supplements', coords: [-33.8915, 151.2767] },
-  { name: 'USYD Campus', address: 'Eastern Ave, Camperdown NSW 2006', type: 'University', hours: '7am – 11pm', products: 'Snacks, energy drinks, meals', coords: [-33.8882, 151.1873] },
-  { name: 'Surry Hills', address: '80 Campbell St, Surry Hills NSW 2010', type: 'Co-Working Space', hours: '7am – 9pm', products: 'Coffee, snacks, wellness', coords: [-33.8858, 151.2094] },
-  { name: 'Chatswood Chase', address: '345 Victoria Ave, Chatswood NSW 2067', type: 'Retail Precinct', hours: '9am – 9pm', products: 'Premium snacks, beverages', coords: [-33.7969, 151.1830] },
-  { name: 'Pyrmont Bay', address: 'Pirrama Rd, Pyrmont NSW 2009', type: 'Gym', hours: '5am – 11pm', products: 'Protein, hydration, bars', coords: [-33.8700, 151.1942] },
-]
-
 export default function Locations() {
+  const [locations, setLocations] = useState([])
   const [activeIndex, setActiveIndex] = useState(null)
   const cardRefs = useRef([])
+
+  useEffect(() => {
+    supabase
+      .from('locations')
+      .select('*')
+      .eq('active', true)
+      .order('created_at', { ascending: true })
+      .then(({ data }) => setLocations(
+        (data ?? []).map(loc => ({ ...loc, coords: [loc.lat, loc.lng] }))
+      ))
+  }, [])
 
   const handleSelect = (i) => {
     setActiveIndex(i)
@@ -58,7 +62,6 @@ export default function Locations() {
               >
                 <div className="location-card__header">
                   <span className="location-card__type">{loc.type}</span>
-                  <span className="location-card__sample">Sample</span>
                 </div>
                 <h3 className="location-card__name">{loc.name}</h3>
                 <p className="location-card__address">{loc.address}</p>
@@ -67,11 +70,14 @@ export default function Locations() {
                     <span className="meta-label">Hours</span>
                     <span className="meta-value">{loc.hours}</span>
                   </div>
-                  <div className="location-card__meta-item">
-                    <span className="meta-label">Stocked with</span>
-                    <span className="meta-value">{loc.products}</span>
-                  </div>
                 </div>
+                {loc.products && (
+                  <div className="location-card__tags">
+                    {loc.products.split(',').map(p => p.trim()).filter(Boolean).map(tag => (
+                      <span key={tag} className="product-tag">{tag}</span>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
 

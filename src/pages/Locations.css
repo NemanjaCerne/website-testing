@@ -58,15 +58,23 @@
   padding: 0.2rem 0.6rem;
 }
 
-.location-card__sample {
+.location-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+
+.product-tag {
   font-family: var(--font-heading);
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-muted);
-  border: 1px solid var(--color-border);
-  padding: 0.15rem 0.5rem;
+  letter-spacing: 0.06em;
+  color: var(--color-neon-blue);
+  border: 1px solid rgba(0, 212, 255, 0.35);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(0, 212, 255, 0.06);
 }
 
 .location-card__name {
