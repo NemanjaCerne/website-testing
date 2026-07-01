@@ -65,17 +65,18 @@ export default function Home() {
         '-=0.1'
       )
 
-      // Subtle parallax as user scrolls past the hero
-      gsap.to(machineRef.current, {
-        yPercent: -12,
-        ease: 'none',
+      // Scroll-linked exit: parallax first, then machine slides back out to the right
+      const exitTl = gsap.timeline({
         scrollTrigger: {
           trigger: sceneRef.current,
           start: 'top top',
           end: 'bottom top',
-          scrub: true,
+          scrub: 1,
         },
       })
+      exitTl
+        .to(machineRef.current, { yPercent: -8, ease: 'none', duration: 0.55 })
+        .to(machineRef.current, { x: '60vw', opacity: 0, ease: 'power2.in', duration: 0.45 })
     }, sceneRef)
 
     return () => ctx.revert()
